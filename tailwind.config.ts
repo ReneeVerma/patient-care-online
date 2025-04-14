@@ -61,7 +61,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        // Hospital management system colors
+        medical: {
+          blue: '#0EA5E9',
+          purple: '#8B5CF6',
+          green: '#10B981',
+          red: '#EF4444',
+          yellow: '#F59E0B',
+          light: '#F3F4F6',
+          dark: '#1F2937'
+        }
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
