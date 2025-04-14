@@ -1,13 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Clock, Calendar as CalendarIcon, UserRound, X } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { AppointmentCard } from "@/components/appointments/AppointmentCard";
+import { AppointmentList } from "@/components/appointments/AppointmentList";
+import { Appointment } from "@/types/appointments";
 
 type ContextType = {
   setTitle: (title: string) => void;
@@ -20,8 +22,6 @@ export default function Appointments() {
 
   useEffect(() => {
     setTitle("Appointments");
-    
-    // In a real app, this would fetch appointments for the selected date
     setAppointments(sampleAppointments);
   }, [setTitle]);
 
@@ -34,7 +34,7 @@ export default function Appointments() {
 
   const appointmentsByTimeSlot = filteredAppointments
     .reduce((acc, appointment) => {
-      const timeSlot = appointment.time.split(' ')[0]; // Extract hour
+      const timeSlot = appointment.time.split(' ')[0];
       if (!acc[timeSlot]) {
         acc[timeSlot] = [];
       }
@@ -108,9 +108,8 @@ export default function Appointments() {
                         <div key={timeSlot} className="relative">
                           <div className="flex items-center mb-2">
                             <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-white text-xs">
-                              <Clock className="h-3 w-3" />
+                              {timeSlot}
                             </div>
-                            <div className="ml-2 font-medium">{timeSlot}</div>
                           </div>
                           <div className="ml-3 pl-4 border-l border-border space-y-3">
                             {appointmentsInSlot.map((appointment) => (
@@ -128,129 +127,13 @@ export default function Appointments() {
                 </TabsContent>
                 
                 <TabsContent value="list" className="mt-4">
-                  <div className="space-y-3">
-                    {filteredAppointments.length > 0 ? (
-                      filteredAppointments.map((appointment) => (
-                        <AppointmentListItem key={appointment.id} appointment={appointment} />
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        No appointments scheduled for this day
-                      </div>
-                    )}
-                  </div>
+                  <AppointmentList appointments={filteredAppointments} />
                 </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
-  );
-}
-
-type Appointment = {
-  id: string;
-  patientName: string;
-  patientId: string;
-  doctorName: string;
-  department: string;
-  date: string;
-  time: string;
-  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
-  reason: string;
-};
-
-type AppointmentCardProps = {
-  appointment: Appointment;
-};
-
-function AppointmentCard({ appointment }: AppointmentCardProps) {
-  const getStatusColor = () => {
-    switch (appointment.status) {
-      case 'scheduled':
-        return 'bg-medical-yellow text-black';
-      case 'in-progress':
-        return 'bg-primary text-white';
-      case 'completed':
-        return 'bg-accent text-white';
-      case 'cancelled':
-        return 'bg-destructive text-white';
-    }
-  };
-
-  return (
-    <div className="p-3 bg-card rounded-md border">
-      <div className="flex justify-between items-start">
-        <div>
-          <h4 className="font-medium">{appointment.patientName}</h4>
-          <p className="text-xs text-muted-foreground">{appointment.patientId}</p>
-        </div>
-        <div className={`text-xs px-2 py-1 rounded-full ${getStatusColor()}`}>
-          {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-        </div>
-      </div>
-      
-      <div className="mt-2 text-xs">
-        <div className="flex items-center">
-          <UserRound className="h-3 w-3 mr-1" />
-          <span>Dr. {appointment.doctorName}</span>
-        </div>
-        <div className="flex items-center mt-1">
-          <Clock className="h-3 w-3 mr-1" />
-          <span>{appointment.time}</span>
-        </div>
-      </div>
-      
-      <div className="mt-2 text-xs">
-        <p className="text-muted-foreground">Reason: {appointment.reason}</p>
-      </div>
-    </div>
-  );
-}
-
-type AppointmentListItemProps = {
-  appointment: Appointment;
-};
-
-function AppointmentListItem({ appointment }: AppointmentListItemProps) {
-  const getStatusColor = () => {
-    switch (appointment.status) {
-      case 'scheduled':
-        return 'bg-medical-yellow text-black';
-      case 'in-progress':
-        return 'bg-primary text-white';
-      case 'completed':
-        return 'bg-accent text-white';
-      case 'cancelled':
-        return 'bg-destructive text-white';
-    }
-  };
-
-  return (
-    <div className="flex items-center p-3 bg-card rounded-md border">
-      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-        {appointment.patientName.charAt(0)}
-      </div>
-      
-      <div className="ml-3 flex-1">
-        <h4 className="font-medium text-sm">{appointment.patientName}</h4>
-        <div className="flex items-center text-xs text-muted-foreground">
-          <Clock className="h-3 w-3 mr-1" />
-          <span>{appointment.time}</span>
-          <div className="mx-2">•</div>
-          <span>Dr. {appointment.doctorName}</span>
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">{appointment.reason}</p>
-      </div>
-      
-      <div className={`text-xs px-2 py-1 rounded-full ${getStatusColor()}`}>
-        {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-      </div>
-      
-      <Button variant="ghost" size="icon" className="ml-2">
-        <X className="h-4 w-4" />
-      </Button>
     </div>
   );
 }
