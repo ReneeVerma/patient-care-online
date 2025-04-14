@@ -12,8 +12,7 @@ npm run dev
 ```
 
 ### Method 2: ZIP Download
-1. Visit the project's GitHub repository: 
-   https://github.com/lovable-dev/patient-care-online/archive/refs/heads/main.zip
+1. [Direct Download Link: Patient Care Online Project (ZIP)](https://github.com/lovable-dev/patient-care-online/archive/refs/heads/main.zip)
 
 2. After downloading:
 ```bash
